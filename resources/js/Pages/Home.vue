@@ -1,0 +1,37 @@
+<script setup>
+import { Head, Link } from '@inertiajs/vue3';
+import GroupItem from "@/Components/app/GroupItem.vue";
+import TextInput from "@/Components/TextInput.vue";
+import GroupList from "@/Components/app/GroupList.vue";
+import FollowerList from "@/Components/app/FollowingList.vue";
+import FollowingList from "@/Components/app/FollowingList.vue";
+import CreatePost from "@/Components/app/CreatePost.vue";
+import PostList from "@/Components/app/PostList.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+
+defineProps(
+    {
+
+    }
+);
+</script>
+
+<template>
+    <AuthenticatedLayout>
+        <div class="lg:grid grid-cols-12 gap-3 p-3 h-full">
+            <div class="lg:col-span-3 lg:order-1 h-full overflow-hidden ">
+                <GroupList />
+            </div>
+            <div class="lg:col-span-3 lg:order-3 h-full overflow-hidden">
+                <FollowingList />
+            </div>
+            <div class="lg:col-span-6 lg:order-2 h-full flex flex-col overflow-hidden">
+                <CreatePost />
+                <PostList class="flex-1"/>
+            </div>
+        </div>
+    </AuthenticatedLayout>
+</template>
+
+<style>
+</style>
