@@ -72,7 +72,7 @@ class ProfileController extends Controller
     public function updateImage(Request $request)
     {
         $data = $request->validate([
-            'cover'=> ['nullable', 'image'],
+            'cover'=> ['nullable', 'image', 'mimes:pdf'],
             'avatar'=> ['nullable', 'image']
         ]);
         $user = $request->user();

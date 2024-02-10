@@ -2,13 +2,18 @@
     <AuthenticatedLayout>
         <div class="max-w-[768px] mx-auto h-full overflow-auto">
             <div
-                v-show="status === 'cover-image-updated'"
+                v-show="showNotification && status === 'cover-image-updated'"
                 class="my-2 py-2 px-3 font-medium text-sm bg-emerald-500 text-white"
             >
                 Your new Cover Image has been saved.
             </div>
+            <div
+                v-if="errors.cover"
+                class="my-2 py-2 px-3 font-medium text-sm bg-red-400 text-white"
+            >
+                {{errors.cover}}
+            </div>
             <div class="group  relative bg-white">
-                <pre>{{errors}}</pre>
                 <img :src="coverImageSrc || user.cover_url || '/img/cover.jpg'"
                      class="w-full h-[200px] object-cover">
                 <div class="absolute top-2 right-2 ">
@@ -92,7 +97,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
+import {computed, ref, watch} from 'vue'
     import {XMarkIcon, CheckCircleIcon} from "@heroicons/vue/24/solid";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
 
@@ -108,6 +113,7 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
         avatar: null,
         cover: null,
     })
+    const showNotification = ref(true);
     const coverImageSrc = ref('')
     const authUser = usePage().props.auth.user;
 
@@ -125,6 +131,7 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
             type: Object,
         }
     });
+
 function onCoverChange(event){
     imagesForm.cover = event.target.files[0]
     if (imagesForm.cover){
@@ -141,13 +148,11 @@ function cancelCoverImg(){
     coverImageSrc.value = null;
 }
 function submitCoverImg(){
-    console.log(imagesForm.cover);
     imagesForm.post(route('profile.updateCover'),{
         onSuccess: (user)=>{
-            console.log(user);
             cancelCoverImg();
+            setTimeout(()=>{showNotification.value=false}, 5000)
         }
-        }
-    );
+    });
 }
 </script>
