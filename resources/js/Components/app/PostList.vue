@@ -2,6 +2,10 @@
 
 import PostItem from "@/Components/app/PostItem.vue";
 
+defineProps({
+    posts: Array
+})
+
     const post1 = {
         user: {
             id: 1,
@@ -65,8 +69,8 @@ import PostItem from "@/Components/app/PostItem.vue";
 
 <template>
     <div class="overflow-auto">
+        <PostItem v-for="post of posts" :key="post.id" :post="post"/>
         <PostItem :post="post1"/>
-        <PostItem :post="post2"/>
     </div>
 </template>
 
