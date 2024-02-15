@@ -1,10 +1,20 @@
 <script setup>
 
 import PostItem from "@/Components/app/PostItem.vue";
+import PostModal from "@/Components/app/PostModal.vue";
+import {ref} from "vue";
 
 defineProps({
     posts: Array
 })
+const showEditModal = ref(false)
+const editPost = ref({})
+
+function openEditModal(post){
+    editPost.value = post;
+    showEditModal.value = true;
+
+}
 
     const post1 = {
         user: {
@@ -53,7 +63,8 @@ defineProps({
             id: 1,
             name: 'Laravel Developers'
         },
-        body: `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+        body: `<p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
                 exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
                 dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
@@ -69,8 +80,9 @@ defineProps({
 
 <template>
     <div class="overflow-auto">
-        <PostItem v-for="post of posts" :key="post.id" :post="post"/>
-        <PostItem :post="post1"/>
+        <PostItem v-for="post of posts" :key="post.id" :post="post"  @editClick="openEditModal"/>
+        <PostModal :post="editPost" v-model="showEditModal" />
+
     </div>
 </template>
 
