@@ -28,6 +28,9 @@ class StorePostRequest extends FormRequest
     }
     protected function prepareForValidation()
     {
-        $this->merge(['user_id'=> auth()->user()->id,]);
+        $this->merge([
+            'user_id'=> auth()->user()->id,
+            'body'=> $this->input('body') ?: '',
+            ]);
     }
 }
