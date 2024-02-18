@@ -47,16 +47,30 @@
 <!--                                    <InputTextArea v-model="form.body" class="mb-3 w-full"/>-->
                                 </div>
 
-                                <div class="py-3 px-4">
+                                <div class="flex gap-2 py-3 px-4">
                                     <button
                                         type="button"
-                                        class="rounded-md bg-indigo-600 px-3 py-2
+                                        class="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2
                                              text-sm font-semibold text-white
                                             shadow-sm hover:bg-indigo-500 focus-visible:outline
                                             focus-visible:outline-2 focus-visible:outline-offset-2
                                             focus-visible:outline-indigo-600 w-full"
                                         @click="submit"
                                     >
+                                        <PaperClipIcon class="w-4 h-4 mr-2"/>
+                                        Attach Files
+                                        <input type="file"  class="absolute left-0 top-0 right-0">
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2
+                                             text-sm font-semibold text-white
+                                            shadow-sm hover:bg-indigo-500 focus-visible:outline
+                                            focus-visible:outline-2 focus-visible:outline-offset-2
+                                            focus-visible:outline-indigo-600 w-full"
+                                        @click="submit"
+                                    >
+                                        <BookmarkIcon class="w-4 h-4 mr-2"/>
                                         Submit
                                     </button>
                                 </div>
@@ -80,7 +94,7 @@ import {
 } from '@headlessui/vue'
 import InputTextArea from "@/Components/app/InputTextArea.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
-import { XMarkIcon } from '@heroicons/vue/24/solid'
+import { XMarkIcon, PaperClipIcon, BookmarkIcon } from '@heroicons/vue/24/solid'
 import {useForm} from "@inertiajs/vue3";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
