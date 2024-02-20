@@ -12,6 +12,7 @@ import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import { XMarkIcon, PaperClipIcon, BookmarkIcon } from '@heroicons/vue/24/solid'
 import {useForm} from "@inertiajs/vue3";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {isImage} from "@/helpers.js";
 
 const editor = ClassicEditor;
 
@@ -27,6 +28,15 @@ const  props = defineProps({
     modelValue: Boolean,
 })
 
+/**
+ * {
+ *     file: File,
+ *     url: '',
+ * }
+ * @type {Ref<UnwrapRef<*[]>>}
+ */
+const attachhmentFiles = ref([]);
+
 const form = useForm({
     id: null,
     body: ''
@@ -39,8 +49,7 @@ const show = computed({
     set: (value) => emit('update:modelValue', value)
 })
 
-const emit = defineEmits(['update:modalValue']
-)
+const emit = defineEmits(['update:modalValue'])
 
 watch(()=> props.post, ()=>{
     form.id = props.post.id
@@ -63,8 +72,38 @@ function submit(){
     })
 }
 
-function onAttachmentChoose($event){
-    console.log(event.target.files)
+async function onAttachmentChoose($event) {
+    console.log($event.target.files);
+
+    for (const file of $event.target.files) {
+        const myFile = {
+            file,
+            url: await readFile(file)
+        };
+        attachhmentFiles.value.push(myFile);
+    }
+    $event.target.value = null;
+    console.log(attachhmentFiles.value)
+}
+
+async function readFile(file){
+    return new Promise((res, rej)=>{
+        if (isImage(file)) {
+            const reader = new FileReader();
+            reader.onload = ()=> {
+                res(reader.result)
+            }
+            reader.onerror = rej
+            reader.readAsDataURL(file)
+        } else {
+            res(null)
+        }
+    })
+
+}
+
+function removeFile(myFile){
+    attachhmentFiles.value = attachhmentFiles.value.filter(f => f !== myFile)
 }
 </script>
 
@@ -114,7 +153,25 @@ function onAttachmentChoose($event){
                                 <div class="p-3 ">
                                     <PostUserHeader :post="post" :show-time="false" class="mb-4"/>
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
-                                    <!--                                    <InputTextArea v-model="form.body" class="mb-3 w-full"/>-->
+                                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 my-3 ">
+                                        <template v-for="myFile of attachhmentFiles" class="">
+                                            <div class="group aspect-square items-center justify-center bg-blue-100
+                                                flex flex-col items-center justify-center text-gray-500 relative">
+                                                <button @click="removeFile(myFile)" class="absolute right-3 top-3 w-7 h-7 flex items-center
+                                                justify-center bg-black/20
+                                                    text-white rounded-full hover:bg-gray-400">
+                                                    <XMarkIcon class="w-5 h-5 "/>
+
+                                                </button>
+                                                <img v-if="isImage(myFile.file)" :src="myFile.url"
+                                                     class="object-cover aspect-square ">
+                                                <template v-else>
+                                                   <PaperClipIcon class="w-12 h-12 mb-3"/>
+                                                    <small class="text-center ">{{myFile.file.name}}</small>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
                                 </div>
 
                                 <div class="flex gap-2 py-3 px-4">
