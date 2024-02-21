@@ -85,7 +85,7 @@ async function onAttachmentChoose($event) {
     $event.target.value = null;
     console.log(attachhmentFiles.value)
 }
-
+// Test
 async function readFile(file){
     return new Promise((res, rej)=>{
         if (isImage(file)) {
