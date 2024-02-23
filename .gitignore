@@ -17,3 +17,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/my_custom_key.pub
+/my_custom_key
+/ed25519.pub
+/ed25519
+/Laravel_Social_Media_webApp/

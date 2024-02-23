@@ -100,7 +100,6 @@ async function onAttachmentChoose($event) {
         attachhmentFiles.value.push(myFile);
     }
     $event.target.value = null;
-    console.log(attachhmentFiles.value)
 }
 // Test
 async function readFile(file){
