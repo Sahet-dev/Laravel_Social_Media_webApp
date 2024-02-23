@@ -1,8 +1,9 @@
 <script setup>
 
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
+import { Menu, MenuButton, MenuItems, MenuItem  } from '@headlessui/vue'
+import { PencilIcon, TrashIcon, EllipsisVerticalIcon, HandThumbUpIcon } from '@heroicons/vue/20/solid'
+import { ChatBubbleLeftRightIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
 import {router} from "@inertiajs/vue3";
 import {isImage} from "@/helpers.js";
 
@@ -130,19 +131,21 @@ function deletePost(){
                 </template>
             </Disclosure>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
-            <template v-for="attachment of post.attachments" class="">
+        <div class="grid gap-3 mb-3 z-50" :class="[
+            post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+        ]">
+            <template v-for="(attachment, ind) of post.attachments.slice(0, 4)">
                 <div class="group aspect-square items-center justify-center bg-blue-100
                 flex flex-col items-center justify-center text-gray-500 relative">
+                    <div v-if="ind === 3" class="absolute left-0 top-0 right-0 bottom-0 z-50 bg-black/40 text-white flex items-center justify-center">
+                        + {{ post.attachments.length - 4 }} more
+                    </div>
                     <button class="opacity-0 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center text-gray-100 bg-gray-700
                      rounded absolute right-2 top-2 cursor-pointer hover:bg-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                             class="w-4 h-4 absolute right-2 top-2 cursor-pointer">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
+                        <ArrowDownTrayIcon class="w-4 h-4"/>
                     </button>
                     <img v-if="isImage(attachment)" :src="attachment.url"
-                        class="object-cover aspect-square">
+                        class="object-contain aspect-square">
                     <template v-else>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                              class="w-12 h-12">
@@ -155,16 +158,11 @@ function deletePost(){
         </div>
         <div class="flex gap-2 pb-3">
             <button class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                     class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
-                </svg>
-                Like
+                <HandThumbUpIcon class="w-5 h-5 mr-2"/>Like
+
             </button>
             <button class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                </svg>
+                <ChatBubbleLeftRightIcon class="w-5 h-5 mr-2"/>
                 Comment
             </button>
         </div>

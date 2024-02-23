@@ -127,7 +127,7 @@ function removeFile(myFile){
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" @close="closeModal" class="relative z-10">
+            <Dialog as="div" @close="closeModal" class="relative z-50">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
@@ -161,7 +161,7 @@ function removeFile(myFile){
                                     as="h3"
                                     class="flex items-center justify-between py-3 px-4 font-medium bg-gray-100 text-gray-900"
                                 >
-                                    Update post
+                                    {{ form.id ?  'Update post' : 'Create Post' }}
                                     <button @click="show = false" class="w-8 h-8 rounded-full hover:bg-black/5 transition flex items-center
                                         justify-center">
                                         <XMarkIcon class="w-4 h-4"/>
@@ -170,7 +170,9 @@ function removeFile(myFile){
                                 <div class="p-3 ">
                                     <PostUserHeader :post="post" :show-time="false" class="mb-4"/>
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
-                                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 my-3 ">
+                                    <div class="grid  gap-3 my-3 " :class="[
+                                        attachhmentFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+                                    ]">
                                         <template v-for="(myFile, ind) of attachhmentFiles" class="">
                                             <div class="group aspect-square items-center justify-center bg-blue-100
                                                 flex flex-col items-center justify-center text-gray-500 relative">
@@ -181,7 +183,7 @@ function removeFile(myFile){
 
                                                 </button>
                                                 <img v-if="isImage(myFile.file)" :src="myFile.url"
-                                                     class="object-cover aspect-square ">
+                                                     class="object-contain">
                                                 <template v-else>
                                                    <PaperClipIcon class="w-12 h-12 mb-3"/>
                                                     <small  class="text-center ">
