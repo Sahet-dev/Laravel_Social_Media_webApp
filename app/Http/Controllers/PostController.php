@@ -87,7 +87,7 @@ class PostController extends Controller
                 PostAttachment::create([
                     'post_id' => $post->id,
                     'name' => $file->getClientOriginalName(),
-                    'path' => $path,
+                    'path' => $path, // Ensure that $path is set correctly,
                     'mime' => $file->getMimeType(),
                     'size' => $file->getSize(),
                     'created_by' => $user->id,
@@ -123,5 +123,24 @@ class PostController extends Controller
         $post->delete();
 
         return back();
+    }
+
+    public function downloadAttachment(PostAttachment $postAttachment)
+    {
+        //TODO check is user has permission to download
+
+        if ($postAttachment->path !== null) {
+            // TODO: Check if the user has permission to download
+
+            // Download the file
+            return response()->download(
+                Storage::disk('public')->path($postAttachment->path),
+                $postAttachment->name
+            );
+        } else {
+            // Handle the case where $postAttachment->path is null
+            return response()->json(['error' => 'File path is null'], 500);
+            // You c
+        }
     }
 }

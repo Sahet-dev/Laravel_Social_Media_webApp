@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/post/{post}', [PostController::class, 'destroy'])
         ->name('post.destroy');
+
+    Route::get('/post/download/{postAttachment}', [PostController::class, 'downloadAttachment'])
+        ->name('post.download');
 });
 
 require __DIR__.'/auth.php';
