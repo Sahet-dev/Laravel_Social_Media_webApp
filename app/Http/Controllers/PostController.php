@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use App\Models\PostReaction;
 
 class PostController extends Controller
 {
@@ -142,5 +145,36 @@ class PostController extends Controller
             return response()->json(['error' => 'File path is null'], 500);
             // You c
         }
+    }
+
+    public function postReaction(Request $request, Post $post)
+    {
+
+        $data = $request->validate([
+            'reaction' => [Rule::enum(PostReactionEnum::class)]
+        ]);
+        $userId = Auth::id();
+        $reaction = PostReaction::where('user_id', $userId)->where('post_id', $post->id)->first();
+
+        if($reaction){
+            $hasReaction = false;
+            $reaction->delete();
+        }else{
+            $hasReaction = true;
+            PostReaction::create([
+                'post_id' => $post->id,
+                'user_id' => $userId,
+                'type' => $data['reaction']
+            ]);
+        }
+
+
+
+        $reactions = PostReaction::where('post_id', $post->id)->count();
+
+        return response([
+            'num_of_reactions' => $reactions,
+            'current_user_has_reaction' => $hasReaction
+            ]);
     }
 }
