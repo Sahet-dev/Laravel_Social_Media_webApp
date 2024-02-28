@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import {onMounted, ref, watch} from 'vue';
 // import {formatNodes} from "tailwindcss/src/oxide/cli/build/utils.js";
 
 const  props = defineProps({
@@ -31,6 +31,12 @@ onMounted(() => {
     }
 });
 
+watch(()=>props.modelValue,()=> {
+    setTimeout(()=>{
+        adjustHeight();
+    })
+})
+
 defineExpose({ focus: () => input.value.focus() });
 
 function onInputChange($event){
@@ -40,7 +46,7 @@ function onInputChange($event){
 function adjustHeight(){
     if (props.autoResize){
         input.value.style.height = 'auto';
-        input.value.style.height = input.value.scrollHeight + 'px';
+        input.value.style.height = (input.value.scrollHeight + 4) +'px';
     }
 }
 
@@ -52,7 +58,7 @@ onMounted(()=>{
 
 <template>
     <textarea
-        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm "
         :value="modelValue"
         @input="onInputChange"
         ref="input"

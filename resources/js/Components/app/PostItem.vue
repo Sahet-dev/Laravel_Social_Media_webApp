@@ -4,15 +4,24 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
 import { Menu, MenuButton, MenuItems, MenuItem  } from '@headlessui/vue'
 import { PencilIcon, TrashIcon, EllipsisVerticalIcon, HandThumbUpIcon } from '@heroicons/vue/20/solid'
 import { ChatBubbleLeftRightIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
-import {router} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {isImage} from "@/helpers.js";
 import {PaperClipIcon} from "@heroicons/vue/24/solid/index.js";
 import axiosClient from "@/axiosClient.js";
+import InputTextArea from "@/Components/app/InputTextArea.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import IndigoButton from "@/Components/app/IndigoButton.vue";
+import {ref} from "vue";
+import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 
+
+const authUser = usePage().props.auth.user
 
 const props = defineProps({
         post: Object,
     });
+
+const newCommentText = ref('');
 
 
 const emit = defineEmits(['editClick', 'attachmentClick'])
@@ -50,6 +59,21 @@ function sendReaction(){
         })
 }
 
+function createComment(){
+    axiosClient.post(route('post.comment.create', props.post), {
+        comment: newCommentText.value
+    })
+        .then(({data}) => {
+            newCommentText.value = ''
+            props.post.comments.unshift(data)
+            props.post.num_of_comments++;
+            console.log(data)
+        })
+        .catch((error) => {
+            console.error('Error creating comment:', error);
+        });
+}
+
 </script>
 
 <template>
@@ -57,11 +81,11 @@ function sendReaction(){
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center  gap-2">
                 <a href="javascript:void(0)">
-                    <img :src="post.user.avatar" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
+                    <img :src="authUser.avatar_url" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
                 </a>
                 <div>
                     <h4 class="font-bold">
-                        <a href="javascript:void(0)" class="hover:underline">{{post.user.name}}</a> >
+                        <a href="javascript:void(0)" class="hover:underline">{{authUser.name}}</a> >
                         <template v-if="post.group">
                             <a href="javascript:void(0)" class="hover:underline">
                                 {{post.group.name}}
@@ -134,20 +158,7 @@ function sendReaction(){
                         </Menu>
         </div>
         <div class="mb-3">
-            <Disclosure v-slot="{ open }">
-                <div class="ck-content-output" v-if="!open" v-html="post.body.substring(0, 200)" />
-                <template v-if="post.body.length > 200">
-                    <DisclosurePanel class="">
-                        <div class="ck-content-output" v-html="post.body" />
-                    </DisclosurePanel>
-                    <div class="flex justify-end">
-                        <DisclosureButton
-                            class="text-blue-500 hover:underline">
-                            {{open ? 'Read less' : 'Read more'}}
-                        </DisclosureButton>
-                    </div>
-                </template>
-            </Disclosure>
+            <ReadMoreReadLess :content="post.body"  content-class="text-sm flex flex-1"/>
         </div>
         <div class="grid gap-3 mb-3 z-50" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
@@ -171,24 +182,72 @@ function sendReaction(){
                 </div>
             </template>
         </div>
-        <div class="flex gap-2 pb-3">
-            <button @click="sendReaction"
-                class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200
+        <Disclosure v-slot="{ open }">
+            <div class="flex gap-2 pb-3">
+                <button @click="sendReaction"
+                        class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200
                 py-2 px-4 flex-1" :class="
                 [post.current_user_has_reaction ? 'bg-sky-100 hover:bg-sky-200' : 'bg-gary-100 hover:bg-gray-200']">
-                <HandThumbUpIcon class="w-5 h-5"/>
-                <span class="mr-2">
+                    <HandThumbUpIcon class="w-5 h-5"/>
+                    <span class="mr-2">
                     {{post.num_of_reactions}}
                 </span>
 
                     {{post.current_user_has_reaction ? 'Unlike' : 'Like'}}
 
-            </button>
-            <button class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1">
-                <ChatBubbleLeftRightIcon class="w-5 h-5 mr-2"/>
-                Comment
-            </button>
-        </div>
+                </button>
+                <DisclosureButton
+                    class="flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1"
+                >
+                    <ChatBubbleLeftRightIcon class="w-5 h-5 "/>
+                    <span class="mr-2">
+                        {{post.num_of_comments}}
+                    </span>
+                    Comment
+
+                </DisclosureButton>
+
+            </div>
+            <DisclosurePanel class="mt-3">
+                    <div class="flex items-center  gap-2 mb-3">
+                        <a href="javascript:void(0)">
+                            <img :src="authUser.avatar_url" class="w-[40px] rounded-full border border-2 transition-all
+                            hover:border-blue-500" alt=""/>
+                        </a>
+                        <div class="flex flex-1">
+                            <InputTextArea v-model="newCommentText" placeholder="Enter your comment here" rows="1"
+                                           class="w-full max-h-[150] resize-none"></InputTextArea>
+                            <IndigoButton @click="createComment" class="rounded-l-none w-[100px] max-w-[100px]">Submit</IndigoButton>
+                        </div>
+                    </div>
+
+                <div>
+                    <div v-for="comment of post.comments" :key="comment.id" class="mb-4">
+                        <div class="flex items-center  gap-2">
+                            <a href="javascript:void(0)">
+                                <img :src="comment.user.avatar_url" class="w-[40px] rounded-full border border-2 transition-all
+                            hover:border-blue-500" alt=""/>
+                            </a>
+                            <div>
+                                <h4 class="font-bold">
+                                    <a href="javascript:void(0)" class="hover:underline">{{comment.user.name}}</a>
+
+                                </h4>
+                                <small class="text-xs text-gray-400">{{comment.updated_at}}</small>
+                            </div>
+                        </div>
+                        <ReadMoreReadLess :content="comment.comment" />
+
+
+<!--                        <div class="fex flex-1 ml-10" v-html="comment.comment">-->
+<!--                        </div>-->
+                    </div>
+                </div>
+
+            </DisclosurePanel>
+        </Disclosure>
+
+
     </div>
 </template>
 
