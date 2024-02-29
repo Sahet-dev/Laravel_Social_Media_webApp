@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
@@ -192,5 +193,25 @@ class PostController extends Controller
         ]);
 
         return response(new CommentResource($comment), 201);
+    }
+
+    public function deleteComment(Comment $comment)
+    {
+        if ($comment->user_id !== Auth::id()){
+            return response("Access Denied", 403);
+        }
+
+        $comment->delete();
+        return response('',204);
+    }
+
+    public function updateComment(UpdateCommentRequest $request, Comment $comment)
+    {
+        $data = $request->validate(['comment' => 'required|string',]);
+
+        $comment->update([
+            'comment' => nl2br($data['comment'])
+        ]);
+        return new CommentResource($comment);
     }
 }
