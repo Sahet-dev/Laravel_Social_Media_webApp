@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
         ->name('post.comment.delete');
     Route::put('/comment/{comment}', [PostController::class, 'updateComment'])
         ->name('post.comment.update');
+    Route::post('/comment/{comment}/reaction', [PostController::class, 'commentReaction'])
+        ->name('comment.reaction');
 });
 
 require __DIR__.'/auth.php';
