@@ -1,6 +1,6 @@
 <script setup>
 
-defineProps({
+ defineProps({
     type: {
         type: String,
         default: 'button'
