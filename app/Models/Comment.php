@@ -12,6 +12,9 @@ class Comment extends Model
 {
     use HasFactory;
 
+    public int $num_of_comments = 0;
+    public array $childComments = [];
+
     protected $fillable = [
         'post_id',
         'comment',
