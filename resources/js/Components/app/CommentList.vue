@@ -79,7 +79,7 @@ function deleteComment(comment){
 
 
 
-            console.log(props.post.num_of_comments)
+
         })
         .catch((error) => {
             console.error('Error creating comment:', error);
@@ -98,7 +98,7 @@ function updateComment(){
                 return c;
             })
 
-            console.log(data)
+
         })
         .catch((error) => {
             console.error('Error creating comment:', error);
@@ -192,7 +192,7 @@ function  onCommentDelete(comment) {
                         replies
                     </DisclosureButton>
                 </div>
-                <DisclosurePanel class="mt-3 ml-10">
+                <DisclosurePanel class="mt-3 ml-10 h-[400px] overflow-auto">
                     <CommentList
                         :post="post"
                         :data="{comments: comment.comments}"
