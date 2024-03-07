@@ -8,6 +8,14 @@ import GroupModal from "@/Components/app/GroupModal.vue";
 const showNewGroupModal = ref(false);
 
 const searchKeyword = ref('');
+
+const props = defineProps({
+    groups: Array
+})
+
+function onGroupCreate(group){
+    props.groups.unshift(group)
+}
 </script>
 
 <template>
@@ -24,31 +32,11 @@ const searchKeyword = ref('');
             You are not joined to any groups
         </div>
         <div v-else class="">
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" /> <GroupItem image="https://picsum.photos/100" title="Laravel Devs"
-                                                                                                                 description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
-            <GroupItem image="https://picsum.photos/100" title="Laravel Devs Supportter"
-                       description="Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed d" />
+            <GroupItem v-for="group of groups" :group="group"/>
+
         </div>
     </div>
-    <GroupModal v-model="showNewGroupModal" />
+    <GroupModal v-model="showNewGroupModal" @create="onGroupCreate"/>
 
 </template>
 
