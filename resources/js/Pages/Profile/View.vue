@@ -183,7 +183,9 @@ function cancelAvatarImg(){
 }
 function submitCoverImg(){
     imagesForm.post(route('profile.updateImages'),{
+
         onSuccess: (user)=>{
+            showNotification.value = true;
             cancelCoverImg();
             setTimeout(()=>{showNotification.value=false}, 5000)
         }
@@ -191,7 +193,9 @@ function submitCoverImg(){
 }
 function submitAvatarImg(){
     imagesForm.post(route('profile.updateImages'),{
+
         onSuccess: (user)=>{
+            showNotification.value = true;
             cancelAvatarImg();
             setTimeout(()=>{showNotification.value=false}, 5000)
         }
