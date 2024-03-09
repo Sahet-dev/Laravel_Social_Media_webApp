@@ -37,7 +37,8 @@ Route::get('/g/{group:slug}', [GroupController::class, 'profile'
 
 
 
-
+Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approveInvitation'])
+    ->name('group.approveInvitation');
 
 
 
@@ -52,6 +53,11 @@ Route::middleware('auth')->group(function () {
         ->name('group.updateImages');
 
 
+    Route::post('/group/invite/{group:slug}', [GroupController::class, 'inviteUsers'])
+        ->name('group.inviteUsers');
+
+    Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approveInvitation'])
+        ->name('group.approveInvitation');
 
 
 //    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

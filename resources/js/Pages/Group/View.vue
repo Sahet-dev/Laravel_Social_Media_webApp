@@ -8,6 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import {useForm} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InviteUserModal from "@/Pages/Group/InviteUserModal.vue";
 
 const imagesForm = useForm({
     thumbnail: null,
@@ -16,6 +17,7 @@ const imagesForm = useForm({
 const showNotification = ref(true);
 const coverImageSrc = ref('')
 const thumbnailImageSrc = ref('')
+const showInviteUserModal = ref(false)
 const authUser = usePage().props.auth.user;
 
 const isCurrentUserAdmin = computed(()=> props.group.role === 'admin')
@@ -149,7 +151,8 @@ function submitThumbnailImg(){
                     </div>
                     <div class="flex justify-between items-center flex-1 p-4">
                         <h2 class="font-bold text-lg">{{ group.name }}</h2>
-                        <PrimaryButton v-if="isCurrentUserAdmin">Invite Users</PrimaryButton>
+                        <PrimaryButton @click="showInviteUserModal = true"
+                                       v-if="isCurrentUserAdmin">Invite Users</PrimaryButton>
                         <PrimaryButton v-if="!group.role && group.auto_approval">Join to Group</PrimaryButton>
                         <PrimaryButton v-if="!group.role && !group.auto_approval">Request to Join</PrimaryButton>
 
@@ -199,5 +202,6 @@ function submitThumbnailImg(){
             </div>
         </div>
     </AuthenticatedLayout>
+    <InviteUserModal v-model="showInviteUserModal"/>
 </template>
 
