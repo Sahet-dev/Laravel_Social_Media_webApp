@@ -31,9 +31,7 @@ Route::get('/g/{group:slug}', [GroupController::class, 'profile'
 
 
 
-//Route::get('/dashboard', function () {
-//    return Inertia::render('Dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 
 
@@ -55,6 +53,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/group/invite/{group:slug}', [GroupController::class, 'inviteUsers'])
         ->name('group.inviteUsers');
+
+
+    Route::post('/group/join/{group:slug}', [GroupController::class, 'join'])
+        ->name('group.join');
+
 
     Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approveInvitation'])
         ->name('group.approveInvitation');
