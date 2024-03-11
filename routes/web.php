@@ -59,6 +59,10 @@ Route::middleware('auth')->group(function () {
         ->name('group.join');
 
 
+    Route::post('/group/join/{group:slug}', [GroupController::class, 'approveRequest'])
+        ->name('group.approveRequest');
+
+
     Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approveInvitation'])
         ->name('group.approveInvitation');
 

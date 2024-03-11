@@ -9,6 +9,8 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import {useForm} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InviteUserModal from "@/Pages/Group/InviteUserModal.vue";
+import UserListItem from "@/Components/app/UserListItem.vue";
+import TextInput from "@/Components/TextInput.vue";
 
 const imagesForm = useForm({
     thumbnail: null,
@@ -18,19 +20,22 @@ const showNotification = ref(true);
 const coverImageSrc = ref('')
 const thumbnailImageSrc = ref('')
 const showInviteUserModal = ref(false)
+const searchKeyword = ref('')
 const authUser = usePage().props.auth.user;
 
 const isCurrentUserAdmin = computed(()=> props.group.role === 'admin')
+const isJoinedToGroup = computed(()=> props.group.role && props.group.status === 'approved')
 
 const props = defineProps({
     errors: Object,
-
     success: {
         type: String,
     },
     group: {
         type: Object,
-    }
+    },
+    users: Array,
+    requests: Array
 });
 
 function onCoverChange(event){
@@ -90,9 +95,27 @@ function joinToGroup(){
     })
     form.post(route('group.join', props.group.slug))
 }
+
+function approveUser(user){
+    const form = useForm({
+        user_id: user.id,
+        action: 'approve'
+    })
+    form.post(route('group.approveRequest', props.group.slug))
+}
+function rejectUser(user){
+    const form = useForm({
+        user_id: user.id,
+        action: 'reject'
+    })
+    form.post(route('group.approveRequest', props.group.slug))
+}
+
+
+
+
+
 </script>
-
-
 <template>
     <AuthenticatedLayout>
         <div class="max-w-[768px] mx-auto h-full overflow-auto">
@@ -108,7 +131,7 @@ function joinToGroup(){
             >
                 {{errors.cover}}
             </div>
-            <div class="group  relative bg-white">
+            <div class="group  relative bg-white p-4">
                 <img :src="coverImageSrc || group.cover_url || '/img/cover.jpg'"
                      class="w-full h-[200px] object-cover">
                 <div v-if="isCurrentUserAdmin" class="absolute top-2 right-2 ">
@@ -182,43 +205,58 @@ function joinToGroup(){
                     </div>
                 </div>
             </div>
-            <div class="border-t-1">
+            <div class="border-t-1 p-4 pt-0">
                 <TabGroup>
                     <TabList class=" flex bg-white">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
-                        <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followers" :selected="selected"/>
+                        <Tab v-if="isJoinedToGroup" v-slot="{ selected }" as="template">
+                            <TabItem text="Users" :selected="selected"/>
                         </Tab>
-                        <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Following" :selected="selected"/>
+                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="template">
+
+                            <TabItem text="Pending Requests" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
-<!--                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="template">-->
-<!--                            <TabItem text="My Profile" :selected="selected"/>-->
-<!--                        </Tab>-->
+
                     </TabList>
-
                     <TabPanels class="mt-2">
-
-                        <TabPanel key="posts" class="bg-white p-3 shadow">
+                        <TabPanel class="bg-white p-3 shadow">
                             POSTS
                         </TabPanel>
-                        <TabPanel key="posts" class="bg-white p-3 shadow">
-                            Followers
+
+
+
+                        <TabPanel v-if="isJoinedToGroup"  class="">
+                            <div>
+                                <TextInput :model-value="searchKeyword" placeholder="Search for Groups" class="w-full"/>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <UserListItem v-for="user of users" :user="user" :key="user.id"
+                                               class="shadow rounded-lg"/>
+                            </div>
+
+                            <pre>{{user}}</pre>
                         </TabPanel>
-                        <TabPanel key="posts" class="bg-white p-3 shadow">
-                            Following
+
+                        <TabPanel v-if="isCurrentUserAdmin"  class="bg-white p-3 shadow">
+                            <div v-if="requests.length" class="grid grid-cols-2 gap-3">
+                                <UserListItem v-for="user of requests" :user="user" :key="user.id"
+                                              :for-approve="true"
+                                              @approve="approveUser" @reject="rejectUser" class="shadow rounded-lg"/>
+                            </div>
+                            <div class="py-8 text-center">
+                                There are no pending requests
+                            </div>
                         </TabPanel>
-                        <TabPanel key="followers" class="bg-white p-3 shadow">
+
+                        <TabPanel class="bg-white p-3 shadow">
                             Photos
                         </TabPanel>
-<!--                        <TabPanel v-if="isMyProfile" key="posts" class="">-->
-<!--                            <Edit :must-verify-email="mustVerifyEmail" :status="status"/>-->
-<!--                        </TabPanel>-->
                     </TabPanels>
                 </TabGroup>
             </div>
