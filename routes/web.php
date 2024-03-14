@@ -55,11 +55,12 @@ Route::middleware('auth')->group(function () {
         ->name('group.inviteUsers');
 
 
-    Route::post('/group/join/{group:slug}', [GroupController::class, 'join'])
+    Route::post('/join/{group:slug}', [GroupController::class, 'join'])
         ->name('group.join');
 
 
-    Route::post('/group/join/{group:slug}', [GroupController::class, 'approveRequest'])
+
+    Route::post('/group/approve-request/{group:slug}', [GroupController::class, 'approveRequest'])
         ->name('group.approveRequest');
 
 

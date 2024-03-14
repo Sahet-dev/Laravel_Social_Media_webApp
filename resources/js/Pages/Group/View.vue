@@ -1,8 +1,7 @@
 <script setup>
 import {computed, ref, watch} from 'vue'
 import {XMarkIcon, CheckCircleIcon, CameraIcon} from "@heroicons/vue/24/solid";
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
-
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
 import {usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
@@ -12,19 +11,6 @@ import InviteUserModal from "@/Pages/Group/InviteUserModal.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
 
-const imagesForm = useForm({
-    thumbnail: null,
-    cover: null,
-})
-const showNotification = ref(true);
-const coverImageSrc = ref('')
-const thumbnailImageSrc = ref('')
-const showInviteUserModal = ref(false)
-const searchKeyword = ref('')
-const authUser = usePage().props.auth.user;
-
-const isCurrentUserAdmin = computed(()=> props.group.role === 'admin')
-const isJoinedToGroup = computed(()=> props.group.role && props.group.status === 'approved')
 
 const props = defineProps({
     errors: Object,
@@ -37,7 +23,24 @@ const props = defineProps({
     users: Array,
     requests: Array
 });
+const imagesForm = useForm({
+    thumbnail: null,
+    cover: null,
+})
+const showNotification = ref(true);
+const coverImageSrc = ref('')
+const thumbnailImageSrc = ref('')
+const showInviteUserModal = ref(false)
+const searchKeyword = ref('')
 
+
+const isCurrentUserAdmin = computed(()=> props.group.role === 'admin')
+const isJoinedToGroup = computed(()=> props.group.role && props.group.status === 'approved')
+
+
+
+
+const authUser = usePage().props.auth.user;
 function onCoverChange(event){
     imagesForm.cover = event.target.files[0]
     if (imagesForm.cover){
@@ -88,12 +91,12 @@ function submitThumbnailImg(){
     });
 }
 
-function joinToGroup(){
-    const form = useForm({
+function joinToGroup() {
+    const form = useForm({})
 
-
+    form.post(route('group.join', props.group.slug), {
+        preserveScroll: true
     })
-    form.post(route('group.join', props.group.slug))
 }
 
 function approveUser(user){
@@ -118,7 +121,8 @@ function rejectUser(user){
 </script>
 <template>
     <AuthenticatedLayout>
-        <div class="max-w-[768px] mx-auto h-full overflow-auto">
+        <div class="max-w-[768px] mx-auto h-full ">
+
             <div
                 v-show="showNotification && success"
                 class="my-2 py-2 px-3 font-medium text-sm bg-emerald-500 text-white"
@@ -229,9 +233,10 @@ function rejectUser(user){
                         </TabPanel>
 
 
+                        <!--        USERS                               USERS                       USERS        -->
 
                         <TabPanel v-if="isJoinedToGroup"  class="">
-                            <div>
+                            <div class="mb-2">
                                 <TextInput :model-value="searchKeyword" placeholder="Search for Groups" class="w-full"/>
                             </div>
 
@@ -239,17 +244,18 @@ function rejectUser(user){
                                 <UserListItem v-for="user of users" :user="user" :key="user.id"
                                                class="shadow rounded-lg"/>
                             </div>
-
-                            <pre>{{user}}</pre>
                         </TabPanel>
 
-                        <TabPanel v-if="isCurrentUserAdmin"  class="bg-white p-3 shadow">
+
+                        <!--           REQUESTS                    REQUESTS            REQUESTS        -->
+                        <TabPanel v-if="isCurrentUserAdmin"  class=" ">
                             <div v-if="requests.length" class="grid grid-cols-2 gap-3">
                                 <UserListItem v-for="user of requests" :user="user" :key="user.id"
                                               :for-approve="true"
-                                              @approve="approveUser" @reject="rejectUser" class="shadow rounded-lg"/>
+                                              @approve="approveUser"
+                                              @reject="rejectUser" class="shadow rounded-lg"/>
                             </div>
-                            <div class="py-8 text-center">
+                            <div v-else class="py-8 text-center">
                                 There are no pending requests
                             </div>
                         </TabPanel>

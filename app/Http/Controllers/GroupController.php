@@ -220,6 +220,8 @@ class GroupController extends Controller
         return back()->with('success', $successMessage);
     }
 
+
+
     public function approveRequest(Request $request, Group $group)
     {
         if (!$group->isAdmin(Auth::id())){
@@ -238,7 +240,7 @@ class GroupController extends Controller
 
         if ($groupUser){
             $approved = false;
-            if ($data['action'] === 'approved'){
+            if ($data['action'] === 'approve'){
                 $approved = true;
                 $groupUser->status = GroupUserStatus::APPROVED->value;
             }else{

@@ -49,12 +49,12 @@ class Group extends Model
     public function pendingUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_users')
-            ->wherePivot('role', GroupUserStatus::PENDING->value);
+            ->wherePivot('status', GroupUserStatus::PENDING->value);
     }
 
     public function approvedUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_users')
-            ->wherePivot('role', GroupUserStatus::APPROVED->value);
+            ->wherePivot('status', GroupUserStatus::APPROVED->value);
     }
 }
