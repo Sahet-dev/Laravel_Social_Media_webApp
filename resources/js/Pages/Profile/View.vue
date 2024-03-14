@@ -183,6 +183,7 @@ function cancelAvatarImg(){
 }
 function submitCoverImg(){
     imagesForm.post(route('profile.updateImages'),{
+        preserveScroll: true,
 
         onSuccess: (user)=>{
             showNotification.value = true;
@@ -193,7 +194,7 @@ function submitCoverImg(){
 }
 function submitAvatarImg(){
     imagesForm.post(route('profile.updateImages'),{
-
+        preserveScroll: true,
         onSuccess: (user)=>{
             showNotification.value = true;
             cancelAvatarImg();

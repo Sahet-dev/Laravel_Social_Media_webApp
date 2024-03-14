@@ -27,6 +27,7 @@ const imagesForm = useForm({
     thumbnail: null,
     cover: null,
 })
+
 const showNotification = ref(true);
 const coverImageSrc = ref('')
 const thumbnailImageSrc = ref('')
@@ -72,6 +73,7 @@ function cancelThumbnailImg(){
 }
 function submitCoverImg(){
     imagesForm.post(route('group.updateImages', props.group.slug),{
+        preserveScroll: true,
         onSuccess: ()=>{
             showNotification.value = true;
             cancelCoverImg();
@@ -83,6 +85,7 @@ function submitCoverImg(){
 
 function submitThumbnailImg(){
     imagesForm.post(route('group.updateImages', props.group.slug),{
+        preserveScroll: true,
         onSuccess: ()=>{
             showNotification.value = true;
             cancelThumbnailImg();
@@ -104,18 +107,32 @@ function approveUser(user){
         user_id: user.id,
         action: 'approve'
     })
-    form.post(route('group.approveRequest', props.group.slug))
+    form.post(route('group.approveRequest', props.group.slug),
+    {
+        preserveScroll: true
+    })
 }
 function rejectUser(user){
     const form = useForm({
         user_id: user.id,
         action: 'reject'
     })
-    form.post(route('group.approveRequest', props.group.slug))
+    form.post(route('group.approveRequest', props.group.slug),
+    {
+        preserveScroll: true
+    })
 }
 
-
-
+function onRoleChange(user, role){
+    const form = useForm({
+        user_id: user.id,
+        role
+    })
+    form.post(route('group.changeRole', props.group.slug),
+    {
+        preserveScroll: true
+    })
+}
 
 
 </script>
@@ -241,7 +258,12 @@ function rejectUser(user){
                             </div>
 
                             <div class="grid grid-cols-2 gap-3">
-                                <UserListItem v-for="user of users" :user="user" :key="user.id"
+                                <UserListItem v-for="user of users"
+                                              :user="user"
+                                              :key="user.id"
+                                              :showRoleDropdown="isCurrentUserAdmin"
+                                              :disableRoleDropdown="group.user_id === user.id"
+                                              @roleChange="onRoleChange"
                                                class="shadow rounded-lg"/>
                             </div>
                         </TabPanel>
