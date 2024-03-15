@@ -10,6 +10,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InviteUserModal from "@/Pages/Group/InviteUserModal.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
+import GroupForm from "@/Components/app/GroupForm.vue";
 
 
 const props = defineProps({
@@ -33,6 +34,11 @@ const coverImageSrc = ref('')
 const thumbnailImageSrc = ref('')
 const showInviteUserModal = ref(false)
 const searchKeyword = ref('')
+const aboutForm = useForm({
+    name: usePage().props.group.name,
+    auto_approval: !!parseInt(usePage().props.group.auto_approval),
+    about : usePage().props.group.about
+})
 
 
 const isCurrentUserAdmin = computed(()=> props.group.role === 'admin')
@@ -134,7 +140,11 @@ function onRoleChange(user, role){
     })
 }
 
-
+function updateGroup(){
+    aboutForm.put(route('group.update', props.group.slug),{
+        preserveScroll: true
+    })
+}
 </script>
 <template>
     <AuthenticatedLayout>
@@ -242,16 +252,16 @@ function onRoleChange(user, role){
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
+                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="template">
+                            <TabItem text="About" :selected="selected"/>
+                        </Tab>
 
                     </TabList>
                     <TabPanels class="mt-2">
                         <TabPanel class="bg-white p-3 shadow">
                             POSTS
                         </TabPanel>
-
-
                         <!--        USERS                               USERS                       USERS        -->
-
                         <TabPanel v-if="isJoinedToGroup"  class="">
                             <div class="mb-2">
                                 <TextInput :model-value="searchKeyword" placeholder="Search for Groups" class="w-full"/>
@@ -267,8 +277,6 @@ function onRoleChange(user, role){
                                                class="shadow rounded-lg"/>
                             </div>
                         </TabPanel>
-
-
                         <!--           REQUESTS                    REQUESTS            REQUESTS        -->
                         <TabPanel v-if="isCurrentUserAdmin"  class=" ">
                             <div v-if="requests.length" class="grid grid-cols-2 gap-3">
@@ -284,6 +292,10 @@ function onRoleChange(user, role){
 
                         <TabPanel class="bg-white p-3 shadow">
                             Photos
+                        </TabPanel>
+                        <TabPanel class="bg-white p-3 shadow">
+                            <GroupForm :form="aboutForm"/>
+                            <PrimaryButton @click="updateGroup">Submit</PrimaryButton>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
