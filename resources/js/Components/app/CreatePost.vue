@@ -6,6 +6,12 @@ import InputTextArea from "@/Components/app/InputTextArea.vue";
 import {useForm, usePage} from "@inertiajs/vue3";
 import PostModal from "@/Components/app/PostModal.vue";
 
+defineProps({
+    group: {
+        type: Object,
+        default: null
+    }
+})
 const authUser = usePage().props.auth.user;
 
 
@@ -45,7 +51,7 @@ function showCreatePostModal(){
         <!--            focus-visible:outline-2 focus-visible:outline-offset-2-->
         <!--            focus-visible:outline-indigo-600">Submit</button>-->
         <!--        </div>-->
-        <!----><PostModal :post="newPost" v-model="showModal" />
+        <!----><PostModal :post="newPost" :group="group" v-model="showModal" />
     </div>
 </template>
 

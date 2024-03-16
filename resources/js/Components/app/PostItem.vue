@@ -3,7 +3,7 @@ import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import {HandThumbUpIcon} from '@heroicons/vue/20/solid'
 import {ChatBubbleLeftEllipsisIcon} from '@heroicons/vue/24/solid'
 import {ChatBubbleLeftRightIcon} from '@heroicons/vue/24/outline'
-import {router, usePage} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import axiosClient from "@/axiosClient.js";
 import InputTextArea from "@/Components/app/InputTextArea.vue";
 import IndigoButton from "@/Components/app/IndigoButton.vue";
@@ -14,21 +14,15 @@ import {ArrowDownTrayIcon} from '@heroicons/vue/24/outline'
 import {isImage} from '@/helpers.js'
 import {PaperClipIcon } from '@heroicons/vue/24/solid/index.js'
 import CommentList from "@/Components/app/CommentList.vue";
-
+import {ChevronRightIcon} from "@heroicons/vue/24/solid/index.js";
 
 const authUser = usePage().props.auth.user
-
-
-
 
 const props = defineProps({
         post: Object,
     });
 
-
-
 const emit = defineEmits(['editClick', 'attachmentClick'])
-
 
 function openEditModal (){
     emit('editClick', props.post)
@@ -66,16 +60,17 @@ function sendReaction(){
     <div class="bg-white border rounded px-4 shadow mb-3 pt-3">
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center  gap-2">
-                <a href="javascript:void(0)">
+                <Link :href="route('profile', post.user.username)">
                     <img :src="authUser.avatar_url" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
-                </a>
+                </Link>
                 <div>
-                    <h4 class="font-bold">
-                        <a href="javascript:void(0)" class="hover:underline">{{authUser.name}}</a> >
+                    <h4 class="flex align-items-center font-bold">
+                        <a :href="route('profile', post.user.username)" class="hover:underline">{{authUser.name}}</a>
                         <template v-if="post.group">
-                            <a href="javascript:void(0)" class="hover:underline">
+                            <ChevronRightIcon class="w-4"/>
+                            <Link :href="route('group.profile', post.group.slug)" class="hover:underline">
                                 {{post.group.name}}
-                            </a>
+                            </Link>
                         </template>
                     </h4>
                     <small class="text-gray-400">{{post.created_at}}</small>
@@ -132,7 +127,7 @@ function sendReaction(){
                     Comment
                 </DisclosureButton>
             </div>
-            <DisclosurePanel class="mt-3">
+            <DisclosurePanel class="comment-list mt-3 max-h-[400] overflow-auto">
                 <CommentList :post="post" :data="{comments: post.comments}"/>
             </DisclosurePanel>
         </Disclosure>

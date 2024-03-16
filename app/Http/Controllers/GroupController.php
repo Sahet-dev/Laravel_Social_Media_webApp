@@ -9,9 +9,11 @@ use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupUserResource;
+use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\Post;
 use App\Models\User;
 use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
@@ -36,9 +38,40 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function profile(Group $group)
+    public function profile(Group $group, Request $request)
     {
         $group->load('currentUserGroup');
+
+        $userId = Auth::id();
+
+        if ($group->isApprovedUser($userId)){
+            $posts = Post::query()
+                ->withCount('reactions')
+                ->with([
+                    'comments' => function ($query) {
+                        $query->withCount('reactions');
+                    },
+                    'reactions' => function ($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    }])
+                ->where('group_id', $group->id)
+                ->latest()->paginate(8);
+                $posts = PostResource::collection($posts);
+        }else{
+            $posts = null;
+            return Inertia::render('Group/View', [
+                'success' => session('success'),
+                'group' => new GroupResource($group),
+                'posts' => $posts,
+                'users' => [],
+                'requests' => []
+            ]);
+        }
+
+
+        if ($request->wantsJson()){
+            return PostResource::collection($posts);
+        }
 
         $users = User::query()
             ->select(['users.*', 'gu.role', 'gu.status', 'gu.group_id'])
@@ -51,6 +84,7 @@ class GroupController extends Controller
         return Inertia::render('Group/View', [
             'success' => session('success'),
             'group' => new GroupResource($group),
+            'posts' => $posts,
             'users' => GroupUserResource::collection($users),
             'requests' => UserResource::collection($requests)
         ]);

@@ -1,4 +1,6 @@
 <script setup>
+import {Link} from "@inertiajs/vue3";
+import {ChevronLeftIcon} from "@heroicons/vue/24/solid/index.js";
 
 defineProps({
     post: {Object
@@ -12,16 +14,17 @@ defineProps({
 
 <template>
     <div class="flex items-center  gap-2">
-        <a href="javascript:void(0)">
+        <Link :href="route('profile', post.user.id)">
             <img :src="post.user.avatar_url" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
-        </a>
+        </Link>
         <div>
             <h4 class="font-bold">
-                <a href="javascript:void(0)" class="hover:underline">{{post.user.name}}</a> >
+                <Link :href="route('profile', post.user.id)" class="hover:underline">{{post.user.name}}</Link>
                 <template v-if="post.group">
-                    <a href="javascript:void(0)" class="hover:underline">
+                    <ChevronLeftIcon  class="w-12 h-12"/>
+                    <Link :href="route('profile', post.user.id)" class="hover:underline">
                         {{post.group.name}}
-                    </a>
+                    </Link>
                 </template>
             </h4>
             <small v-if="showTime" :show class="text-gray-400">{{post.updated_at}}</small>
