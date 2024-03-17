@@ -160,7 +160,7 @@ function  onCommentDelete(comment) {
                         <small class="text-xs text-gray-400">{{comment.updated_at}}</small>
                     </div>
                 </div>
-                <EditDeleteDropdown :user="comment.user" @edit="startEditComment(comment)" @delete="deleteComment(comment)"/>
+                <EditDeleteDropdown :user="comment.user" :post="post" :comment="comment" @edit="startEditComment(comment)" @delete="deleteComment(comment)"/>
             </div>
             <div v-if="editingComment && editingComment.id === comment.id" class=" ml-12">
                 <InputTextArea v-model="editingComment.comment" placeholder="Enter your comment here" rows="1"

@@ -10,6 +10,8 @@ use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use App\Notifications\CommentDeleted;
+use App\Notifications\PostDeleted;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -122,13 +124,17 @@ class PostController extends Controller
         //to do: check if user has permission
         $id = Auth::id();
 
-        if ($post->user_id !== $id ){
-            return response("You have no Permission to delete", 403);
+        if ($post->isOwner($id) || $post->group && $post->group->isAdmin($id)){
+            $post->delete();
+            if (!$post->isOwner($id))
+            {
+                $post->user->notify(new PostDeleted($post->group));
+            }
+            return back();
         }
 
-        $post->delete();
 
-        return back();
+        return response("You have no Permission to delete", 403);
     }
 
     public function downloadAttachment(PostAttachment $postAttachment)
@@ -204,12 +210,21 @@ class PostController extends Controller
 
     public function deleteComment(Comment $comment)
     {
-        if ($comment->user_id !== Auth::id()){
-            return response("Access Denied", 403);
+        $post = $comment->post;
+        $id = Auth::id();
+        if ($comment->isOwner($id) ||  $post->isOwner($id)){
+            $comment->delete();
+
+            if (!$comment->isOwner($id)){
+                $comment->user->notify(new CommentDeleted($comment, $post));
+            }
+
+            return response('',204);
         }
 
-        $comment->delete();
-        return response('',204);
+        return response("Access Denied", 403);
+
+
     }
 
     public function updateComment(UpdateCommentRequest $request, Comment $comment)

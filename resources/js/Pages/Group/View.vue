@@ -258,7 +258,6 @@ function updateGroup(){
                         <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="template">
                             <TabItem text="About" :selected="selected"/>
                         </Tab>
-
                     </TabList>
                     <TabPanels class="mt-2">
                         <TabPanel class="">
@@ -269,8 +268,6 @@ function updateGroup(){
                             <div v-else class="py-8 text-center">
                                 Nothing to see
                             </div>
-
-
                         </TabPanel>
                         <!--        USERS                               USERS                       USERS        -->
                         <TabPanel v-if="isJoinedToGroup"  class="">

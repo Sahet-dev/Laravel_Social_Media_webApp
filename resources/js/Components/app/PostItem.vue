@@ -76,7 +76,7 @@ function sendReaction(){
                     <small class="text-gray-400">{{post.created_at}}</small>
                 </div>
             </div>
-            <EditDeleteDropdown :user="post.user" @edit="openEditModal" @delete="deletePost"/>
+            <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
         <div class="mb-3">
             <ReadMoreReadLess :content="post.body"  content-class="text-sm flex flex-1"/>
