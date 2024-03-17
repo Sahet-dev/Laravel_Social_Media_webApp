@@ -121,6 +121,8 @@ function approveUser(user){
         preserveScroll: true
     })
 }
+
+
 function rejectUser(user){
     const form = useForm({
         user_id: user.id,
@@ -131,6 +133,21 @@ function rejectUser(user){
         preserveScroll: true
     })
 }
+
+
+function deleteUserFromGroup(user){
+    if (!window.confirm(`Delete user "${user.name}" from this group?`)){
+        return false;
+    }
+    const form = useForm({
+        user_id: user.id,
+    })
+    form.delete(route('group.removeUser', props.group.slug),
+        {
+            preserveScroll: true
+        })
+}
+
 
 function onRoleChange(user, role){
     const form = useForm({
@@ -148,6 +165,8 @@ function updateGroup(){
         preserveScroll: true
     })
 }
+
+
 </script>
 <template>
     <AuthenticatedLayout>
@@ -266,7 +285,7 @@ function updateGroup(){
                                 <PostList :posts="posts.data" class="flex-1"/>
                             </template>
                             <div v-else class="py-8 text-center">
-                                Nothing to see
+                                (nothing to show)
                             </div>
                         </TabPanel>
                         <!--        USERS                               USERS                       USERS        -->
@@ -282,6 +301,7 @@ function updateGroup(){
                                               :showRoleDropdown="isCurrentUserAdmin"
                                               :disableRoleDropdown="group.user_id === user.id"
                                               @roleChange="onRoleChange"
+                                              @delete="deleteUserFromGroup"
                                                class="shadow rounded-lg"/>
                             </div>
                         </TabPanel>
