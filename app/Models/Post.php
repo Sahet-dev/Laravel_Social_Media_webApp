@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,36 @@ class Post extends Model
     public function latestFiveComments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public static function postsForTimeline($userId, $getLatest = true): Builder
+    {
+        $query = Post::query() // SELECT * FROM posts
+        ->withCount('reactions') // SELECT COUNT(*) from reactions
+        ->with([
+//            'user',
+//            'group',
+//            'group.currentUserGroup',
+//            'attachments',
+
+
+            'comments' => function ($query) {
+                $query->withCount('reactions'); // SELECT * FROM comments WHERE post_id IN (1, 2, 3...)
+                // SELECT COUNT(*) from reactions
+            },
+//            'comments.user',
+//            'comments.reactions' => function ($query) use ($userId) {
+//                $query->where('user_id', $userId); // SELECT * from reactions WHERE user_id = ?
+//            },
+            'reactions' => function ($query) use ($userId) {
+                $query->where('user_id', $userId); // SELECT * from reactions WHERE user_id = ?
+            }])
+        ->latest();
+//        if ($getLatest) {
+//            $query->latest();
+//        }
+
+        return $query;
     }
 
     public function isOwner($userId)

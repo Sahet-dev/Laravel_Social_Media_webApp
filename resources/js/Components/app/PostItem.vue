@@ -1,13 +1,9 @@
 <script setup>
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import {HandThumbUpIcon} from '@heroicons/vue/20/solid'
-import {ChatBubbleLeftEllipsisIcon} from '@heroicons/vue/24/solid'
 import {ChatBubbleLeftRightIcon} from '@heroicons/vue/24/outline'
 import {Link, router, usePage} from "@inertiajs/vue3";
 import axiosClient from "@/axiosClient.js";
-import InputTextArea from "@/Components/app/InputTextArea.vue";
-import IndigoButton from "@/Components/app/IndigoButton.vue";
-import {ref} from "vue";
 import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 import EditDeleteDropdown from "@/Components/app/EditDeleteDropdown.vue";
 import {ArrowDownTrayIcon} from '@heroicons/vue/24/outline'
