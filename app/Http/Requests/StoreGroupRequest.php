@@ -27,4 +27,11 @@ class StoreGroupRequest extends FormRequest
             'about' => ['nullable']
         ];
     }
+
+    protected function passedValidation(): void
+    {
+        $data =  $this->validated();
+        $data['about'] = nl2br($data['about']);
+        $this->replace($data);
+    }
 }

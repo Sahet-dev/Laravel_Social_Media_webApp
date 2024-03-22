@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Group;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class UpdateGroupRequest extends FormRequest
 {
@@ -33,4 +34,12 @@ class UpdateGroupRequest extends FormRequest
             'about' => ['nullable']
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'about' => nl2br($this->about)
+        ]);
+    }
+
 }
