@@ -3,6 +3,7 @@
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -82,30 +83,38 @@ Route::middleware('auth')->group(function () {
         ->name('group.approveInvitation');
 
 
-//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/post/{post}', [PostController::class, 'view'])
-        ->name('post.view');
 
-    Route::post('/post', [PostController::class, 'store'])
-        ->name('post.create');
+    Route::post('/user/follow/{user}', [UserController::class, 'follow'])->name('user.follow');
 
-    Route::put('/post/{post}', [PostController::class, 'update'])
-        ->name('post.update');
 
-    Route::delete('/post/{post}', [PostController::class, 'destroy'])
-        ->name('post.destroy');
+    Route::prefix('/post')->group(function (){
+        Route::get('/{post}', [PostController::class, 'view'])
+            ->name('post.view');
 
-    Route::get('/post/download/{postAttachment}', [PostController::class, 'downloadAttachment'])
-        ->name('post.download');
+        Route::post('/', [PostController::class, 'store'])
+            ->name('post.create');
 
-    Route::post('/post/{post}/reaction', [PostController::class, 'postReaction'])
-        ->name('post.reaction');
-    Route::post('/post/{post}/comment', [PostController::class, 'createComment'])
-        ->name('post.comment.create');
+        Route::put('/{post}', [PostController::class, 'update'])
+            ->name('post.update');
+
+        Route::delete('/{post}', [PostController::class, 'destroy'])
+            ->name('post.destroy');
+
+        Route::get('/download/{postAttachment}', [PostController::class, 'downloadAttachment'])
+            ->name('post.download');
+
+        Route::post('/{post}/reaction', [PostController::class, 'postReaction'])
+            ->name('post.reaction');
+        Route::post('/{post}/comment', [PostController::class, 'createComment'])
+            ->name('post.comment.create');
+    });
+
+
     Route::delete('/comment/{comment}', [PostController::class, 'deleteComment'])
         ->name('post.comment.delete');
     Route::put('/comment/{comment}', [PostController::class, 'updateComment'])

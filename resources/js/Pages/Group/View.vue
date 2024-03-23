@@ -242,10 +242,10 @@ function updateGroup(){
                             Login to Join this group
                         </PrimaryButton>
 
-                        <PrimaryButton v-if="isCurrentUserAdmin"
-                                       @click="showInviteUserModal = true">
-                            Invite Users
-                        </PrimaryButton>
+<!--                        <PrimaryButton v-if="isCurrentUserAdmin"-->
+<!--                                       @click="showInviteUserModal = true">-->
+<!--                            Invite Users-->
+<!--                        </PrimaryButton>-->
                         <PrimaryButton v-if="authUser && !group.role && group.auto_approval" @click="joinToGroup">
                             Join to Group
                         </PrimaryButton>
@@ -257,6 +257,29 @@ function updateGroup(){
 
                     </div>
                 </div>
+
+                <div class="flex justify-between items-center flex-1 p-4">
+                    <h2 class="font-bold text-lg">{{ group.name }}</h2>
+
+                    <PrimaryButton v-if="!authUser" :href="route('login')">
+                        Login to Join this group
+                    </PrimaryButton>
+
+                    <PrimaryButton v-if="isCurrentUserAdmin"
+                                   @click="showInviteUserModal = true">
+                        Invite Users
+                    </PrimaryButton>
+                    <PrimaryButton v-if="authUser && !group.role && group.auto_approval" @click="joinToGroup">
+                        Join to Group
+                    </PrimaryButton>
+                    <PrimaryButton v-if="authUser && !group.role && !group.auto_approval"
+                                   @click="joinToGroup">
+                        Request to Join
+                    </PrimaryButton>
+
+
+                </div>
+
             </div>
             <div class="border-t-1 p-4 pt-0">
                 <TabGroup>
