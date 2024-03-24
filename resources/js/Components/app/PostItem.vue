@@ -57,11 +57,11 @@ function sendReaction(){
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center  gap-2">
                 <Link :href="route('profile', post.user.username)">
-                    <img :src="authUser.avatar_url" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
+                    <img :src="post.user.avatar_url" class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500" alt=""/>
                 </Link>
                 <div>
                     <h4 class="flex align-items-center font-bold">
-                        <a :href="route('profile', post.user.username)" class="hover:underline">{{authUser.name}}</a>
+                        <a :href="route('profile', post.user.username)" class="hover:underline">{{post.user.name}}</a>
                         <template v-if="post.group">
                             <ChevronRightIcon class="w-4"/>
                             <Link :href="route('group.profile', post.group.slug)" class="hover:underline">

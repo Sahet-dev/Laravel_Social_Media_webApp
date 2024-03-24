@@ -8,13 +8,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { reactive} from "vue";
 import {useForm} from "@inertiajs/vue3";
 import WhiteButton from "@/Components/app/WhiteButton.vue";
-import PostList from "@/Components/app/PostList.vue";
-import CreatePost from "@/Components/app/CreatePost.vue";
-import UserListItem from "@/Components/app/UserListItem.vue";
-import TextInput from "@/Components/TextInput.vue";
 
 const imagesForm = useForm({
     avatar: null,
@@ -23,8 +18,6 @@ const imagesForm = useForm({
 const showNotification = ref(true);
 const coverImageSrc = ref('')
 const avatarImageSrc = ref('')
-const searchFollowerKeyword = ref('')
-const searchFollowingsKeyword = ref('')
 const authUser = usePage().props.auth.user;
 
 const isMyProfile = computed(()=> authUser && authUser.id === props.user.id)
@@ -46,11 +39,7 @@ const props = defineProps({
     followerCount: Number,
     user: {
         type: Object,
-    },
-    posts: Object,
-    followers: Array,
-    followings: Array,
-
+    }
 });
 
 function onCoverChange(event){
@@ -161,25 +150,25 @@ function followUser(){
                     <div class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px]  rounded-full overflow-hidden ">
                         <img :src="avatarImageSrc || user.avatar_url || '/img/avatar_default.png'"
                              class="w-full h-full object-cover">
-                            <button v-if="!avatarImageSrc"
-                                    class="absolute bg-white/25 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100">
-                                <CameraIcon class="w-8 h-8"/>
+                        <button v-if="!avatarImageSrc"
+                                class="absolute bg-white/25 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100">
+                            <CameraIcon class="w-8 h-8"/>
 
-                                <input type="file" class="absolute left-0 bottom-0 right-0 opacity-0 cursor-pointer"
-                                       @change="onAvatarChange">
+                            <input type="file" class="absolute left-0 bottom-0 right-0 opacity-0 cursor-pointer"
+                                   @change="onAvatarChange">
+                        </button>
+                        <div v-else class="absolute items-center justify-center flex l gap-2">
+                            <button @click="cancelAvatarImg" class="w-7 h-7 flex items-center justify-center bg-red-500/80
+                                text-white rounded-full">
+                                <XMarkIcon class="w-5 h-5 "/>
+
                             </button>
-                            <div v-else class="absolute items-center justify-center flex l gap-2">
-                                <button @click="cancelAvatarImg" class="w-7 h-7 flex items-center justify-center bg-red-500/80
+                            <button @click="submitAvatarImg" class="w-7 h-7 flex items-center justify-center bg-emerald-500/80
                                 text-white rounded-full">
-                                    <XMarkIcon class="w-5 h-5 "/>
+                                <CheckCircleIcon class="w-5 h-5"/>
 
-                                </button>
-                                <button @click="submitAvatarImg" class="w-7 h-7 flex items-center justify-center bg-emerald-500/80
-                                text-white rounded-full">
-                                    <CheckCircleIcon class="w-5 h-5"/>
-
-                                </button>
-                            </div>
+                            </button>
+                        </div>
 
                     </div>
                     <div class="flex justify-between items-center flex-1 p-4">
@@ -187,7 +176,7 @@ function followUser(){
                             <h2 class="font-bold text-lg">{{ user.name }}</h2>
                             <p class="text-xs text-gray-500">{{followerCount}} Follower(s)</p>
                         </div>
-                        <div v-if="authUser.id !== user.id">
+                        <div>
                             <PrimaryButton v-if="!isCurrentUserFollower" @click="followUser">
                                 Follow User
                             </PrimaryButton>
@@ -201,75 +190,48 @@ function followUser(){
                 </div>
             </div>
             <div class="border-t-1">
+                <TabItem text="Posts" :selected="false"/>
+                <TabItem text="Followers" :selected="false"/>
+                <TabItem text="Following" :selected="false"/>
+                <TabItem text="Photos" :selected="false"/>
+                <TabItem text="My Profile" :selected="false"/>
                 <TabGroup>
                     <TabList class=" flex bg-white">
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Posts" :selected="selected"/>
+
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followers" :selected="selected"/>
+
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Following" :selected="selected"/>
+
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Photos" :selected="selected"/>
+
                         </Tab>
                         <Tab v-if="isMyProfile" v-slot="{ selected }" as="template">
-                            <TabItem text="My Profile" :selected="selected"/>
+
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2">
+<!--                    <TabPanels class="mt-2">-->
 
-                        <TabPanel key="posts" class=" p-3 shadow">
-                            <template v-if="posts">
-                                <CreatePost />
-                                <PostList :posts="posts.data" class="flex-1"/>
-                            </template>
-                            <div v-else class="py-8 text-center">
-                                (nothing to show)
-                            </div>
-                        </TabPanel>
-                        <TabPanel key="posts" class="p-3 shadow">
-                            <div class="mb-2">
-                                <TextInput :model-value="searchFollowerKeyword" placeholder="Search for Users" class="w-full"/>
-                            </div>
-
-                            <div v-if="followers.length" class="grid grid-cols-2 gap-3">
-                                <UserListItem v-for="user of followers"
-                                              :user="user"
-                                              :key="user.id"
-                                />
-                            </div>
-                            <div v-else class="py-8 text-center">
-                                No followers yet
-                            </div>
-                        </TabPanel>
-                        <TabPanel key="posts" class="p-3 shadow">
-                            <div class="mb-2">
-                                <TextInput :model-value="searchFollowingsKeyword" placeholder="Search for Users" class="w-full"/>
-                            </div>
-
-
-                            <div v-if="followings.length" class="grid grid-cols-2 gap-3">
-                                <UserListItem v-for="user of followings"
-                                              :user="user"
-                                              :key="user.id"
-                                />
-                            </div>
-                            <div v-else class="py-8 text-center">
-                                No followings yet
-                            </div>
-
-                        </TabPanel>
-                        <TabPanel key="followers" class="bg-white p-3 shadow">
-                            Photos
-                        </TabPanel>
-                        <TabPanel v-if="isMyProfile" key="posts" class="">
-                            <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
-                        </TabPanel>
-                    </TabPanels>
+<!--                        <TabPanel key="posts" class="bg-white p-3 shadow">-->
+<!--                            POSTS-->
+<!--                        </TabPanel>-->
+<!--                        <TabPanel key="posts" class="bg-white p-3 shadow">-->
+<!--                            Followers-->
+<!--                        </TabPanel>-->
+<!--                        <TabPanel key="posts" class="bg-white p-3 shadow">-->
+<!--                            Following-->
+<!--                        </TabPanel>-->
+<!--                        <TabPanel key="followers" class="bg-white p-3 shadow">-->
+<!--                            Photos-->
+<!--                        </TabPanel>-->
+<!--                        <TabPanel v-if="isMyProfile" key="posts" class="">-->
+<!--                            <Edit :must-verify-email="mustVerifyEmail" :status="status"/>-->
+<!--                        </TabPanel>-->
+<!--                    </TabPanels>-->
                 </TabGroup>
             </div>
         </div>

@@ -2,10 +2,15 @@
 import TextInput from "@/Components/TextInput.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import InputTextArea from "@/Components/app/InputTextArea.vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 defineProps({
     form: Object
 })
+const editor = ClassicEditor;
 
+const editorConfig = {
+    toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'numberedList', '|', 'outdent', 'indent', '|', 'bulletList', '|', 'blockQuote']
+}
 
 </script>
 
@@ -28,7 +33,7 @@ defineProps({
     </div>
     <div class="mb-3">
         <label>About Group</label>
-        <InputTextArea v-model="form.about" class="w-full" />
+        <ckeditor :editor="editor" v-model="form.about" :config="editorConfig"></ckeditor>
 
     </div>
 </template>
