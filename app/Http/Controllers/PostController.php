@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Reaction;
+use function Laravel\Prompts\select;
 
 class PostController extends Controller
 {
@@ -79,6 +80,9 @@ class PostController extends Controller
                     ->get();
                 Notification::send($users, new PostCreated($post, $group));
             }
+
+            $followers = $user->followers;
+            Notification::send($followers, new PostCreated($post, $user, null));
 
 
         } catch (\Exception $exception){

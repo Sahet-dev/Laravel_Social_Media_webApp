@@ -4,7 +4,9 @@ import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
 import {ref} from "vue";
 
-
+defineProps({
+    followings: Array
+})
 
 
 
@@ -18,7 +20,10 @@ const searchKeyword = ref('');
             You are not following to anyone yet
         </div>
         <div v-else>
-
+            <UserListItem v-for="following of followings"
+                          :key="following.id"
+                          :user="following"
+                            class="rounded-lg"/>
         </div>
     </div>
 </template>

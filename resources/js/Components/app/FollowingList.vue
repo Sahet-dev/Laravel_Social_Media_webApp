@@ -3,7 +3,9 @@
 import {ref} from "vue";
 import FollowingListItem from "@/Components/app/FollowingListItem.vue";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
-
+defineProps({
+    followings: Array
+})
 const searchKeyword = ref('');
 </script>
 
@@ -20,7 +22,7 @@ const searchKeyword = ref('');
                     </div>
                 </DisclosureButton>
                 <DisclosurePanel>
-                    <FollowingListItem />
+                    <FollowingListItem :followings="followings"/>
                 </DisclosurePanel>
                 <div class="flex justify-end">
                 </div>
@@ -28,7 +30,7 @@ const searchKeyword = ref('');
         </div>
         <div class="h-full overflow-hidden flex-col hidden lg:flex">
             <h2 class="text-xl font-bold mb-4">  Followings  </h2>
-            <FollowingListItem />
+            <FollowingListItem :followings="followings"/>
         </div>
     </div>
 </template>
