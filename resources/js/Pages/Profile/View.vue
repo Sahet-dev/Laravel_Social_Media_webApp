@@ -15,6 +15,8 @@ import PostList from "@/Components/app/PostList.vue";
 import CreatePost from "@/Components/app/CreatePost.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
+import PostAttachments from "@/Components/app/PostAttachments.vue";
+import TabPhotos from "@/Pages/Profile/TabPhotos.vue";
 
 const imagesForm = useForm({
     avatar: null,
@@ -26,6 +28,8 @@ const avatarImageSrc = ref('')
 const searchFollowerKeyword = ref('')
 const searchFollowingsKeyword = ref('')
 const authUser = usePage().props.auth.user;
+const previewAttachmentsPost = ref({})
+const showAttachmentsModal = ref(false)
 
 const isMyProfile = computed(()=> authUser && authUser.id === props.user.id)
 
@@ -50,6 +54,7 @@ const props = defineProps({
     posts: Object,
     followers: Array,
     followings: Array,
+    photos: Array,
 
 });
 
@@ -113,6 +118,14 @@ function followUser(){
     form.post(route('user.follow', props.user.id), {
         preserveScroll: true
     })
+}
+
+function openAttachmentPreviewModal(post, index) {
+    previewAttachmentsPost.value = {
+        post,
+        index
+    }
+    showAttachmentsModal.value = true;
 }
 </script>
 
@@ -264,7 +277,7 @@ function followUser(){
 
                         </TabPanel>
                         <TabPanel key="followers" class="bg-white p-3 shadow">
-                            Photos
+                            <TabPhotos :photos="photos" />
                         </TabPanel>
                         <TabPanel v-if="isMyProfile" key="posts" class="">
                             <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
