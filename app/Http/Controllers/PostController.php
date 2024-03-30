@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\Reaction;
 use function Laravel\Prompts\select;
+use OpenAI\Laravel\Facades\OpenAI;
 
 class PostController extends Controller
 {
@@ -319,5 +320,24 @@ class PostController extends Controller
             'num_of_reactions' => $reactions,
             'current_user_has_reaction' => $hasReaction
         ]);
+    }
+
+    public function generatePostContent(Request $request)
+    {
+        $prompt = $request->get('prompt');
+         $result = OpenAI::chat()->create([
+             'model' => 'gpt-3.5-turbo',
+             'messages' => [
+                 [
+                     'role' => 'user',
+                     'content' => 'Please generate social media post content based on the following prompt.
+                     Generate formatted content with multiple paragraphs. Put hashtags after 2 lines from the main content' . PHP_EOL . PHP_EOL . 'Prompt' .PHP_EOL .
+                         $prompt
+                 ],
+             ],
+         ]);
+        return response([
+             'content' => $result->choices[0]->message->content], 200);
+
     }
 }

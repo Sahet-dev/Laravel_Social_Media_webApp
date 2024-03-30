@@ -112,6 +112,9 @@ Route::middleware('auth')->group(function () {
             ->name('post.reaction');
         Route::post('/{post}/comment', [PostController::class, 'createComment'])
             ->name('post.comment.create');
+
+        Route::post('/ai-post', [PostController::class, 'generatePostContent'])
+            ->name('post.aiContent');
     });
 
 
