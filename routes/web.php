@@ -5,8 +5,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SearchController;
 use Inertia\Inertia;
 
 
@@ -124,6 +124,8 @@ Route::middleware('auth')->group(function () {
         ->name('post.comment.update');
     Route::post('/comment/{comment}/reaction', [PostController::class, 'commentReaction'])
         ->name('comment.reaction');
+ Route::get('/search/{search?}', [SearchController::class, 'search'])
+        ->name('search');
 
 
 });
