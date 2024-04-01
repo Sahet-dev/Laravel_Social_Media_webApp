@@ -1,6 +1,5 @@
 <script setup>
  import UserListItem from "@/Components/app/UserListItem.vue";
- import GroupListItem from "@/Components/app/GroupListItem.vue";
  import GroupItem from "@/Components/app/GroupItem.vue";
  import PostList from "@/Components/app/PostList.vue";
  import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";

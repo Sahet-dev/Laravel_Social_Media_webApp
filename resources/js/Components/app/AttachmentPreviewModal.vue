@@ -7,8 +7,9 @@ import {
     DialogPanel,
     DialogTitle,
 } from '@headlessui/vue'
-import { XMarkIcon, PaperClipIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
-import {isImage} from "@/helpers.js";
+import { XMarkIcon, PaperClipIcon, ChevronLeftIcon, ChevronRightIcon, PlayCircleIcon} from '@heroicons/vue/24/solid'
+import {isImage, isVideo} from "@/helpers.js";
+
 
 
 
@@ -98,7 +99,7 @@ function resetModal() {
                                 text-left align-middle shadow-xl transition-all"
                             >
                                 <button @click="closeModal" class="absolute right-3 top-3 z-30 w-10 h-10 rounded-full hover:bg-black/5 transition flex items-center
-                                        justify-center text-white">
+                                        justify-center text-white z-40">
                                     <XMarkIcon class="w-6 h-6"/>
                                 </button>
 
@@ -115,6 +116,10 @@ function resetModal() {
                                     <div class="flex items-center justify-center w-full h-full p-3">
                                         <img v-if="isImage(attachment)" :src="attachment.url"
                                              class="max-w-full max-h-full">
+
+                                        <div v-else-if="isVideo(attachment)" class="flex items-center">
+                                            <video :src="attachment.url" controls autoplay></video>
+                                        </div>
                                         <div v-else class="flex flex-col justify-center items-center text-white">
                                             <PaperClipIcon class="w-10 h-10 mb-3"/>
                                             <small>{{attachment.name}}</small>
