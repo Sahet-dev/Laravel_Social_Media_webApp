@@ -104,3 +104,7 @@
     text-decoration: underline;
     color: #2563eb;
 }
+
+.ck-content-output a.hashtag {
+    background-color: #d6e0f5;
+}

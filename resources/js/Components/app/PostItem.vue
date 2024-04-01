@@ -11,6 +11,7 @@ import {isImage} from '@/helpers.js'
 import {PaperClipIcon } from '@heroicons/vue/24/solid/index.js'
 import CommentList from "@/Components/app/CommentList.vue";
 import {ChevronRightIcon} from "@heroicons/vue/24/solid/index.js";
+import {computed} from "vue";
 
 const authUser = usePage().props.auth.user
 
@@ -18,7 +19,22 @@ const props = defineProps({
         post: Object,
     });
 
-const emit = defineEmits(['editClick', 'attachmentClick'])
+const emit = defineEmits(['editClick', 'attachmentClick']);
+
+const postBody = computed(() => {
+    let content = props.post.body.replace(
+        /(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
+        (match, group1, group2) => {
+            const encodedGroup = encodeURIComponent(group2);
+            return `${group1 || ''}<a href="/search/${encodedGroup}" class="hashtag">${group2}</a>`;
+        }
+    )
+
+    return content;
+})
+
+
+
 
 function openEditModal (){
     emit('editClick', props.post)
@@ -75,7 +91,7 @@ function sendReaction(){
             <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
         <div class="mb-3">
-            <ReadMoreReadLess :content="post.body"  content-class="text-sm flex flex-1"/>
+            <ReadMoreReadLess :content="postBody"  content-class="text-sm flex flex-1"/>
         </div>
         <div class="grid gap-3 mb-3 z-50" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'

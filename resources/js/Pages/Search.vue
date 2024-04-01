@@ -6,6 +6,7 @@
  import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
  const  props = defineProps({
+     search: String,
      user: Array,
      groups: Array,
      posts: Object
@@ -15,7 +16,7 @@
 <template>
     <AuthenticatedLayout>
         <div class="p-4 ">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div class="shadow bg-white rounded p-3 mb-3">
                     <h2 class="text-lg font-medium text-gray-900">Users</h2>
                     <div class="">
