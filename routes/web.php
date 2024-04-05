@@ -115,9 +115,6 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/ai-post', [PostController::class, 'generatePostContent'])
             ->name('post.aiContent');
-
-        Route::post('/fetch-url-preview', [PostController::class, 'fetchUrlPreview'])
-            ->name('post.fetchUrlPreview');
     });
 
 
