@@ -1,17 +1,16 @@
 <script setup>
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import {HandThumbUpIcon} from '@heroicons/vue/20/solid'
-import {ChatBubbleLeftRightIcon} from '@heroicons/vue/24/outline'
+import {ArrowDownTrayIcon, ChatBubbleLeftRightIcon} from '@heroicons/vue/24/outline'
 import {Link, router, usePage} from "@inertiajs/vue3";
 import axiosClient from "@/axiosClient.js";
 import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 import EditDeleteDropdown from "@/Components/app/EditDeleteDropdown.vue";
-import {ArrowDownTrayIcon} from '@heroicons/vue/24/outline'
 import {isImage} from '@/helpers.js'
-import {PaperClipIcon } from '@heroicons/vue/24/solid/index.js'
+import {ChevronRightIcon, PaperClipIcon} from '@heroicons/vue/24/solid/index.js'
 import CommentList from "@/Components/app/CommentList.vue";
-import {ChevronRightIcon} from "@heroicons/vue/24/solid/index.js";
 import {computed} from "vue";
+import UrlPreview from "@/Components/app/UrlPreview.vue";
 
 const authUser = usePage().props.auth.user
 
@@ -22,15 +21,12 @@ const props = defineProps({
 const emit = defineEmits(['editClick', 'attachmentClick']);
 
 const postBody = computed(() => {
-    let content = props.post.body.replace(
-        /(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
+    return props.post.body.replace(/(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
         (match, group1, group2) => {
             const encodedGroup = encodeURIComponent(group2);
             return `${group1 || ''}<a href="/search/${encodedGroup}" class="hashtag">${group2}</a>`;
         }
-    )
-
-    return content;
+    );
 })
 
 
@@ -92,6 +88,10 @@ function sendReaction(){
         </div>
         <div class="mb-3">
             <ReadMoreReadLess :content="postBody"  content-class="text-sm flex flex-1"/>
+            <div v-if="post.preview && post.preview.title">
+                <UrlPreview :preview="post.preview" :url="post.preview_url"/>
+
+            </div>
         </div>
         <div class="grid gap-3 mb-3 z-50" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'

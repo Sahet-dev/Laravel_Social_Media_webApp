@@ -9,6 +9,7 @@ import {
 } from '@headlessui/vue'
 import InputTextArea from "@/Components/app/InputTextArea.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
+import UrlPreview from "@/Components/app/UrlPreview.vue";
 import { XMarkIcon, PaperClipIcon, BookmarkIcon, ArrowUturnLeftIcon, SparklesIcon } from '@heroicons/vue/24/solid'
 import {useForm, usePage} from "@inertiajs/vue3";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -18,6 +19,9 @@ import axiosClient from "@/axiosClient.js";
 const editor = ClassicEditor;
 
 const editorConfig = {
+    mediaEmbed: {
+        removeProviders: ['dailymotion', 'spotify', 'youtube', 'vimeo', 'instagram', 'twitter', 'googleMaps', 'flickr', 'facebook']
+    },
     toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'numberedList', '|', 'outdent', 'indent', '|', 'bulletList', '|', 'blockQuote']
 }
 
@@ -31,6 +35,7 @@ const  props = defineProps({
         default: null
     },
     modelValue: Boolean,
+
 })
 
 const attachmentExtensions = usePage().props.attachmentExtensions;
@@ -46,6 +51,10 @@ const attachhmentFiles = ref([]);
 const attachmentErrors = ref([])
 const formErrors = ref({})
 const aiButtonLoading = ref(false)
+// const urlPreview = ref(null)
+// let debounceTimeout = null
+let previewUrl = null
+
 
 
 const form = useForm({
@@ -53,6 +62,8 @@ const form = useForm({
     attachments: [],
     group_id: null,
     deleted_file_ids: [],
+    preview: {},
+    preview_url: null,
     _method: 'POST'
 })
 
@@ -66,6 +77,7 @@ const emit = defineEmits(['update:modalValue', 'hide'])
 
 watch(()=> props.post, ()=>{
         form.body = props.post.body || ''
+        onInputChabge();
 });
 
 
@@ -206,6 +218,70 @@ function getAiPost(){
 
         })
 }
+
+
+function fetchPreview(url) {
+    if (url === form.preview_url) {
+        return;
+    }
+
+    form.preview_url = url
+    form.preview = {}
+    if (url) {
+        axiosClient.post(route('post.fetchUrlPreview'), {url})
+            .then(({data}) => {
+                form.preview = {
+                    title: data['og:title'],
+                    description: data['og:description'],
+                    image: data['og:image']
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+}
+
+
+function onInputChabge($event){
+    let url = matchHref()
+
+    if (!url) {
+        url = matchLink()
+    }
+    fetchPreview(url)
+}
+
+function matchHref() {
+    // Regular expression to match URLs
+    const urlRegex = /<a.+href="((https?):\/\/[^"]+)"/;
+
+    // Match the first URL in the HTML content
+    const match = form.body.match(urlRegex);
+
+    // Check if a match is found
+    if (match && match.length > 0) {
+
+        return match[1];
+    }
+    return null;
+}
+
+
+function matchLink() {
+    // Regular expression to match URLs
+    const urlRegex = /(?:https?):\/\/[^\s<]+/;
+
+    // Match the first URL in the HTML content
+    const match = form.body.match(urlRegex);
+
+    // Check if a match is found
+    if (match && match.length > 0) {
+        return match[0];
+    }
+    return null
+}
+
 </script>
 
 <template>
@@ -259,8 +335,8 @@ function getAiPost(){
                                     </div>
 
                                     <div class="relative group">
-                                        <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
-
+                                        <ckeditor :editor="editor" v-model="form.body" :config="editorConfig" @change="onInputChabge"></ckeditor>
+                                        <UrlPreview :preview="form.preview" :url="form.preview_url"/>
                                         <button
                                             @click="getAiPost"
                                             :disabled="aiButtonLoading"

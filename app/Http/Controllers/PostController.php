@@ -340,4 +340,42 @@ class PostController extends Controller
              'content' => $result->choices[0]->message->content], 200);
 
     }
+
+    public function fetchUrlPreview(Request $request)
+    {
+        $data = $request->validate([
+            'url' => 'url'
+        ]);
+        $url = $data['url'];
+
+        $html = file_get_contents($url);
+
+        $dom = new \DOMDocument();
+
+        // Suppress warnings for malformed HTML
+        libxml_use_internal_errors(true);
+
+        // Load HTML content into the DOMDocument
+        $dom->loadHTML($html);
+
+        // Suppress warnings for malformed HTML
+        libxml_use_internal_errors(false);
+
+        $ogTags = [];
+        $metaTags = $dom->getElementsByTagName('meta');
+        foreach ($metaTags as $tag) {
+            $property = $tag->getAttribute('property');
+            if (str_starts_with($property, 'og:')) {
+                $ogTags[$property] = $tag->getAttribute('content');
+            }
+        }
+
+        $jsonEncodedData = json_encode($ogTags);
+        if ($jsonEncodedData === false) {
+            // Handle JSON encoding error
+            return response()->json(['error' => 'Error encoding data to JSON'], 500);
+        }
+
+        return $ogTags;
+    }
 }
