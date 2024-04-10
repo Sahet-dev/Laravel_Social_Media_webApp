@@ -48,17 +48,12 @@ class GroupController extends Controller
         $userId = Auth::id();
 
         if ($group->isApprovedUser($userId)){
-            $posts = Post::query()
-                ->withCount('reactions')
-                ->with([
-                    'comments' => function ($query) {
-                        $query->withCount('reactions');
-                    },
-                    'reactions' => function ($query) use ($userId) {
-                        $query->where('user_id', $userId);
-                    }])
+            $posts = Post::postsForTimeline($userId, false)
+                ->leftJoin('groups AS g', 'g.pinned_post_id', 'posts.id')
                 ->where('group_id', $group->id)
-                ->latest()->paginate(8);
+                ->orderBy('g.pinned_post_id', 'desc')
+                ->orderBy('posts.created_at', 'desc')
+                ->paginate(10);
                 $posts = PostResource::collection($posts);
         }else{
             $posts = null;

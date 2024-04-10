@@ -115,6 +115,9 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/ai-post', [PostController::class, 'generatePostContent'])
             ->name('post.aiContent');
+
+        Route::post('/{post}/pin', [PostController::class, 'pinUnpin'])
+            ->name('post.pinUnpin');
     });
 
 

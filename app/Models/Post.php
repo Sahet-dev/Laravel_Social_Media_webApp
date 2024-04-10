@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Post
+ * @property Group $group
+ */
+
 class Post extends Model
 {
     use HasFactory;
@@ -25,9 +30,9 @@ class Post extends Model
     {
         return $this->belongsTo(Group::class);
     }
-    public function attachment(): HasMany
+    public function attachments(): HasMany
     {
-        return $this->hasMany(PostAttachment::class)->latest();
+        return   $this->hasMany(PostAttachment::class)->latest();
     }
 
     public function reactions(): MorphMany
@@ -49,27 +54,24 @@ class Post extends Model
         $query = Post::query() // SELECT * FROM posts
         ->withCount('reactions') // SELECT COUNT(*) from reactions
         ->with([
-//            'user',
-//            'group',
-//            'group.currentUserGroup',
-//            'attachments',
-
-
+            'user',
+            'group',
+            'group.currentUserGroup',
+            'attachments',
             'comments' => function ($query) {
                 $query->withCount('reactions'); // SELECT * FROM comments WHERE post_id IN (1, 2, 3...)
                 // SELECT COUNT(*) from reactions
             },
-//            'comments.user',
-//            'comments.reactions' => function ($query) use ($userId) {
-//                $query->where('user_id', $userId); // SELECT * from reactions WHERE user_id = ?
-//            },
+            'comments.user',
+            'comments.reactions' => function ($query) use ($userId) {
+                $query->where('user_id', $userId); // SELECT * from reactions WHERE user_id = ?
+            },
             'reactions' => function ($query) use ($userId) {
                 $query->where('user_id', $userId); // SELECT * from reactions WHERE user_id = ?
-            }])
-        ->latest();
-//        if ($getLatest) {
-//            $query->latest();
-//        }
+            }]);
+        if ($getLatest) {
+            $query->latest();
+        }
 
         return $query;
     }

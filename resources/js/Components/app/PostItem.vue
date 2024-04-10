@@ -2,7 +2,7 @@
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import {HandThumbUpIcon} from '@heroicons/vue/20/solid'
 import {ChatBubbleLeftRightIcon} from '@heroicons/vue/24/outline'
-import {Link, router, usePage} from "@inertiajs/vue3";
+import {Link, router, usePage, useForm} from "@inertiajs/vue3";
 import axiosClient from "@/axiosClient.js";
 import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 import EditDeleteDropdown from "@/Components/app/EditDeleteDropdown.vue";
@@ -12,9 +12,10 @@ import {PaperClipIcon } from '@heroicons/vue/24/solid/index.js'
 import CommentList from "@/Components/app/CommentList.vue";
 import {ChevronRightIcon} from "@heroicons/vue/24/solid/index.js";
 import {computed} from "vue";
+import {MapPinIcon} from "@heroicons/vue/24/outline/index.js";
 
 const authUser = usePage().props.auth.user
-
+const group = usePage().props.group;
 const props = defineProps({
         post: Object,
     });
@@ -35,6 +36,13 @@ const postBody = computed(() => {
 
 
 
+const isPinned = computed(() => {
+    if (group?.id) {
+        return group?.pinned_post_id === props.post.id
+    }
+    return authUser?.pinned_post_id === props.post.id
+})
+
 
 function openEditModal (){
     emit('editClick', props.post)
@@ -46,6 +54,28 @@ function deletePost(){
             preserveScroll: true
         })
     }
+}
+
+function pinUnpinPost() {
+    const form = useForm({
+        forGroup: group?.id
+    })
+    let isPinned = false;
+    if (group?.id) {
+        isPinned = group?.pinned_post_id === props.post.id;
+    } else {
+        isPinned = authUser?.pinned_post_id === props.post.id;
+    }
+    form.post(route('post.pinUnpin', props.post.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (group?.id) {
+                group.pinned_post_id = isPinned ? null : props.post.id
+            } else {
+                authUser.pinned_post_id = isPinned ? null : props.post.id
+            }
+        }
+    })
 }
 
 function openAttachment(ind){
@@ -88,7 +118,20 @@ function sendReaction(){
                     <small class="text-gray-400">{{post.created_at}}</small>
                 </div>
             </div>
-            <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
+
+            <div class="flex items-center gap-2">
+                <div v-if="isPinned" class="flex items-center text-xs">
+                    <MapPinIcon
+                        class="h-3 w-3"
+                        aria-hidden="true" />
+                    pinned
+                </div>
+                <EditDeleteDropdown :user="post.user" :post="post"
+                                    @edit="openEditModal"
+                                    @delete="deletePost"
+                                    @pin="pinUnpinPost"
+                />
+            </div>
         </div>
         <div class="mb-3">
             <ReadMoreReadLess :content="postBody"  content-class="text-sm flex flex-1"/>
