@@ -22,8 +22,16 @@ class HomeController extends Controller
         $posts = Post::query()
             ->withCount('reactions')
             ->with([
+                'user',
+                'group',
+                'attachments',
                 'comments' => function ($query)  use ($userId){
                     $query->withCount('reactions');
+                },
+                'comments.user',
+                'comments.reactions'=> function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+
                 },
                 'reactions' => function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -46,7 +54,7 @@ class HomeController extends Controller
                     ->orWhere('posts.user_id', $userId)
                 ;
             })
-            ->paginate(2);
+            ->paginate(20);
 
         $posts = PostResource::collection($posts);
         if ($request->wantsJson()){
