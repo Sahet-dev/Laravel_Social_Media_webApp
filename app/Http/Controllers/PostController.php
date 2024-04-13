@@ -288,16 +288,17 @@ class PostController extends Controller
         $data = $request->validate([
             'reaction' => [Rule::enum(ReactionEnum::class)]
         ]);
+
         $userId = Auth::id();
         $reaction = Reaction::where('user_id', $userId)
             ->where('object_id', $comment->id)
             ->where('object_type', Comment::class)
             ->first();
 
-        if($reaction){
+        if ($reaction) {
             $hasReaction = false;
             $reaction->delete();
-        }else{
+        } else {
             $hasReaction = true;
             Reaction::create([
                 'object_id' => $comment->id,
@@ -305,14 +306,7 @@ class PostController extends Controller
                 'user_id' => $userId,
                 'type' => $data['reaction']
             ]);
-            if (!$comment->isOwner($userId)){
-                $user = User::where('id', $userId)->first();
-                $comment->user->notify(new ReactionAddedOnComment($comment->post, $comment, $user));
-
-            }
         }
-
-
 
         $reactions = Reaction::where('object_id', $comment->id)->where('object_type', Comment::class)->count();
 

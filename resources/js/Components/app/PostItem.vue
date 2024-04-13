@@ -82,14 +82,13 @@ function openAttachment(ind){
     emit('attachmentClick', props.post, ind)
 }
 
-function sendReaction(){
-    axiosClient.post(route('post.reaction', props.post), {
+function sendCommentReaction(comment) {
+    axiosClient.post(route('comment.reaction', comment.id), {
         reaction: 'like'
     })
         .then(({data}) => {
-            props.post.current_user_has_reaction = data.current_user_has_reaction
-            props.post.num_of_reactions = data.num_of_reactions;
-
+            comment.current_user_has_reaction = data.current_user_has_reaction
+            comment.num_of_reactions = data.num_of_reactions;
         })
 }
 
