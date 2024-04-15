@@ -96,7 +96,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{post}', [PostController::class, 'view'])
             ->name('post.view');
 
-        Route::post('/', [PostController::class, 'store'])
+        Route::post('/create', [PostController::class, 'store'])
             ->name('post.create');
 
         Route::put('/{post}', [PostController::class, 'update'])

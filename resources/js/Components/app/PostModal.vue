@@ -106,9 +106,9 @@ function submit(){
             }
         })
     }else {
-        form.post(route('post.create'),{
+        form.post(route('post.create'), {
             preserveScroll: true,
-            onSuccess: (res)=>{
+            onSuccess: (res) => {
                 closeModal()
             },
             onError: (errors) => {
