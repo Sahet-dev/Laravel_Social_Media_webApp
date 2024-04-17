@@ -25,7 +25,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
         <div class="mb-4 text-sm text-gray-600">
             Thanks for signing up! Before getting started, could you verify your email address by clicking on the link
-            we just emailed to you? If you didn't receive the email, we will gladly send you another.
+            we just emailed to you? If you didn't receive the email, we will gladly send you another. (Please don't forget to check '<b>Spam</b>' folder if you don't see the email in your <b>Inbox</b>)
         </div>
 
         <div class="mb-4 font-medium text-sm text-green-600" v-if="verificationLinkSent">
